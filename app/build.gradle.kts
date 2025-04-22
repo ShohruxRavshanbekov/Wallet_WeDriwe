@@ -65,11 +65,10 @@ dependencies {
 
     // Ktor
     implementation(libs.ktor.client.core)
-    implementation(libs.ktor.client.android)
+    implementation(libs.ktor.client.cio)
     implementation(libs.ktor.client.logging)
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.slf4j.android)
 
     // KotlinX Serialization
     implementation(libs.kotlinx.serialization.json)

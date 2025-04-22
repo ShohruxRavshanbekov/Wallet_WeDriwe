@@ -1,8 +1,8 @@
-package uz.futuresoft.wallet_wedriwe.data.remote.services.promoCodeService
+package uz.futuresoft.wallet_wedriwe.data.remote.apis.promoCodeApi
 
 import io.ktor.client.HttpClient
-import uz.futuresoft.wallet_wedriwe.data.remote.dto.PromoCodeRequest
-import uz.futuresoft.wallet_wedriwe.data.remote.dto.PromoCodeResponse
+import uz.futuresoft.wallet_wedriwe.data.network.dto.PromoCodeRequest
+import uz.futuresoft.wallet_wedriwe.data.network.dto.PromoCodeResponse
 
 class PromoCodeServiceImpl(
     private val client: HttpClient

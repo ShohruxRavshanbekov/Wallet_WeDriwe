@@ -1,8 +1,8 @@
-package uz.futuresoft.wallet_wedriwe.data.remote.services.cardsService
+package uz.futuresoft.wallet_wedriwe.data.remote.apis.cardsApi
 
 import io.ktor.client.HttpClient
-import uz.futuresoft.wallet_wedriwe.data.remote.dto.CardRequest
-import uz.futuresoft.wallet_wedriwe.data.remote.dto.CardResponse
+import uz.futuresoft.wallet_wedriwe.data.network.dto.CardRequest
+import uz.futuresoft.wallet_wedriwe.data.network.dto.CardResponse
 
 class CardsServiceImpl(
     private val client: HttpClient,

@@ -54,9 +54,11 @@ private fun Content() {
         },
     ) {
         composable<Screen.Wallet> {
+            val viewModel = koinViewModel<WalletViewModel>()
+
             WalletScreen(
                 navController = navController,
-                viewModel = koinViewModel<WalletViewModel>(),
+                viewModel = viewModel,
             )
         }
     }

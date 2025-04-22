@@ -1,4 +1,4 @@
-package uz.futuresoft.wallet_wedriwe.data.remote.dto
+package uz.futuresoft.wallet_wedriwe.data.network.dto
 
 import kotlinx.serialization.Serializable
 

@@ -22,8 +22,8 @@ object KtorClient {
             install(ContentNegotiation) { json() }
 
             defaultRequest {
-                url(BASE_URL)
                 contentType(type = ContentType.Application.Json)
+                url(BASE_URL)
                 header(
                     key = "X-Account-Phone",
                     value = ACCOUNT_PHONE,
