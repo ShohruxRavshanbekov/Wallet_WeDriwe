@@ -1,43 +1,53 @@
 package uz.futuresoft.wallet_wedriwe.presentation.screens.wallet
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import uz.futuresoft.wallet_wedriwe.data.remote.apis.walletApi.WalletApi
-import uz.futuresoft.wallet_wedriwe.data.utils.ApiError
-import uz.futuresoft.wallet_wedriwe.utils.Result
+import uz.futuresoft.data.utils.ApiError
+import uz.futuresoft.domain.repository.WalletRepository
+import uz.futuresoft.domain.utils.Result
 
 class WalletViewModel(
-    private val walletApi: WalletApi
+    private val walletRepository: WalletRepository,
 ) : ViewModel() {
-//    init {
-//        viewModelScope.launch {
-//            when (val result = walletApi.getWalletInfo()) {
-//                is Result.Success -> {
-//                    Log.d("AAAAA", "WalletViewModel: ${result.data}")
-//                }
-//
-//                is Result.Error -> {
-//                    when (result.error) {
-//                        ApiError.CLIENT_ERROR -> {
-//                            Log.d("AAAAA", "WalletViewModel-Error: CLIENT_ERROR")
-//                        }
-//
-//                        ApiError.SERVER_ERROR -> {
-//                            Log.d("AAAAA", "WalletViewModel-Error: SERVER_ERROR")
-//                        }
-//
-//                        ApiError.NO_INTERNET_CONNECTION -> {
-//                            Log.d("AAAAA", "WalletViewModel-Error: NO_INTERNET_CONNECTION")
-//                        }
-//
-//                        ApiError.UNKNOWN -> {
-//                            Log.d("AAAAA", "WalletViewModel-Error: UNKNOWN")
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
+    private val _walletState = MutableStateFlow(WalletState())
+    val walletState: StateFlow<WalletState> = _walletState.asStateFlow()
+
+    fun handleIntent(intent: WalletIntent) {
+        when (intent) {
+            WalletIntent.GetWalletInfo -> getWalletInfo()
+        }
+    }
+
+    private fun getWalletInfo() {
+        _walletState.update { it.copy(loading = true) }
+        viewModelScope.launch {
+            when (val result = walletRepository.getWalletInfo()) {
+                is Result.Success -> _walletState.update {
+                    it.copy(
+                        loading = false,
+                        error = "no error, everything is ok"
+                    )
+                }
+
+                is Result.Error -> _walletState.update {
+                    it.copy(
+                        loading = false,
+                        error = when (result.error) {
+                            ApiError.CLIENT_ERROR -> "CLIENT_ERROR"
+                            ApiError.SERVER_ERROR -> "SERVER_ERROR"
+                            ApiError.NETWORK_ERROR -> "NETWORK_ERROR"
+                            ApiError.NO_INTERNET_CONNECTION -> "NO_INTERNET_CONNECTION"
+                            ApiError.UNKNOWN -> "UNKNOWN"
+                            else -> "unknown error type"
+                        }
+                    )
+                }
+            }
+        }
+    }
 }

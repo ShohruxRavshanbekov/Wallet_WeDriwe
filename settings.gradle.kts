@@ -19,5 +19,10 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Wallet - WeDriwe"
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
+rootProject.name = "WalletWeDriwe"
+
 include(":app")
+include(":data")
+include(":domain")

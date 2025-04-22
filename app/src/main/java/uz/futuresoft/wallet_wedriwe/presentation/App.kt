@@ -4,8 +4,8 @@ import android.app.Application
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
-import uz.futuresoft.wallet_wedriwe.data.di.dataModule
-import uz.futuresoft.wallet_wedriwe.presentation.screens.wallet.di.walletModule
+import uz.futuresoft.data.di.dataModule
+import uz.futuresoft.wallet_wedriwe.presentation.di.uiModule
 
 class App : Application() {
 
@@ -14,7 +14,7 @@ class App : Application() {
         startKoin {
             androidLogger()
             androidContext(this@App)
-            modules(dataModule, walletModule)
+            modules(dataModule, uiModule)
         }
     }
 }
