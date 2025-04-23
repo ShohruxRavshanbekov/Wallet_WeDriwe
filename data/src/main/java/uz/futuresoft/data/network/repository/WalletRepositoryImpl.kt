@@ -1,9 +1,9 @@
 package uz.futuresoft.data.network.repository
 
-import android.util.Log
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ClientRequestException
+import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.client.plugins.ServerResponseException
 import io.ktor.client.request.get
 import io.ktor.client.request.put
@@ -12,12 +12,12 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import kotlinx.io.IOException
 import uz.futuresoft.data.network.dto.WalletResponse
-import uz.futuresoft.domain.models.PaymentMethod
-import uz.futuresoft.domain.models.Wallet
-import uz.futuresoft.data.utils.ApiError
 import uz.futuresoft.data.utils.toDomain
 import uz.futuresoft.data.utils.toRequest
+import uz.futuresoft.domain.models.PaymentMethod
+import uz.futuresoft.domain.models.Wallet
 import uz.futuresoft.domain.repository.WalletRepository
+import uz.futuresoft.domain.utils.ApiError
 import uz.futuresoft.domain.utils.Error
 import uz.futuresoft.domain.utils.Result
 import java.net.ConnectException
@@ -34,12 +34,13 @@ class WalletRepositoryImpl(
             Result.Error(error = ApiError.CLIENT_ERROR)
         } catch (e: ServerResponseException) {
             Result.Error(error = ApiError.SERVER_ERROR)
+        } catch (e: HttpRequestTimeoutException) {
+            Result.Error(error = ApiError.TIME_OUT_ERROR)
         } catch (e: ConnectException) {
             Result.Error(error = ApiError.NO_INTERNET_CONNECTION)
         } catch (e: IOException) {
             Result.Error(error = ApiError.NETWORK_ERROR)
         } catch (e: Exception) {
-            Log.d("AAAAA", "getWalletInfo: ${e.message}")
             Result.Error(error = ApiError.UNKNOWN)
         }
     }
@@ -56,6 +57,8 @@ class WalletRepositoryImpl(
             Result.Error(error = ApiError.CLIENT_ERROR)
         } catch (e: ServerResponseException) {
             Result.Error(error = ApiError.SERVER_ERROR)
+        } catch (e: HttpRequestTimeoutException) {
+            Result.Error(error = ApiError.TIME_OUT_ERROR)
         } catch (e: ConnectException) {
             Result.Error(error = ApiError.NO_INTERNET_CONNECTION)
         } catch (e: IOException) {

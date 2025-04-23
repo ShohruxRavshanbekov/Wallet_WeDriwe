@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="balance">Balance</string>
+    <string name="not_identified">Identification required</string>
+</resources>

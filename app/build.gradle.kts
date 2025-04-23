@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "uz.futuresoft.wallet_wedriwe"
+    namespace = "uz.futuresoft.wallet_wedrive"
     compileSdk = 35
 
     defaultConfig {
@@ -60,14 +60,14 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // Modules
+    implementation(projects.common)
     implementation(projects.data)
     implementation(projects.domain)
+    implementation(projects.features.wallet)
+    implementation(projects.features.cards)
 
     // Navigation
     implementation(libs.androidx.navigation.compose)
-
-    // KotlinX Serialization
-    implementation(libs.kotlinx.serialization.json)
 
     // Koin
     implementation(libs.koin.androidx.compose)

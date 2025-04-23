@@ -21,8 +21,11 @@ dependencyResolutionManagement {
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-rootProject.name = "WalletWeDriwe"
+rootProject.name = "WalletWeDrive"
 
 include(":app")
 include(":data")
 include(":domain")
+include(":features:wallet")
+include(":features:cards")
+include(":common")
