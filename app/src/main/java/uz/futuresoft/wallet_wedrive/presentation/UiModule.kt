@@ -5,5 +5,11 @@ import org.koin.dsl.module
 import uz.futuresoft.features.wallet.WalletViewModel
 
 val uiModule = module {
-    viewModel { WalletViewModel(promoCodeRepository = get(), getWalletInfoUseCase = get()) }
+    viewModel {
+        WalletViewModel(
+            promoCodeRepository = get(),
+            walletRepository = get(),
+            getWalletInfoUseCase = get(),
+        )
+    }
 }

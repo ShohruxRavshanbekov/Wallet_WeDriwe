@@ -11,6 +11,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,12 +32,10 @@ internal fun PaymentMethodItem(
     icon: ImageVector,
     title: String,
     selected: Boolean,
-    onSelect: (Boolean) -> Unit,
+    onSelect: () -> Unit,
 ) {
-    var checked by remember { mutableStateOf(selected) }
-
     Card(
-        onClick = { checked = !checked },
+        onClick = onSelect,
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 2.dp),
@@ -67,11 +66,8 @@ internal fun PaymentMethodItem(
                 )
             }
             CustomSwitch(
-                checked = checked,
-                onCheckedChange = {
-                    checked = it
-                    onSelect(checked)
-                },
+                checked = selected,
+                onCheckedChange = { onSelect() },
             )
         }
     }

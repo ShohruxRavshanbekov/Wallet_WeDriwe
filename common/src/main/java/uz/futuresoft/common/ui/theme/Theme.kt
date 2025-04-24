@@ -19,6 +19,7 @@ private val DarkColorScheme = lightColorScheme(
     surface = Color.White,
     onSurface = PrimaryTextColor,
     surfaceVariant = WalletItemBackgroundColor,
+    surfaceContainerLow = BottomSheetBackgroundColor,
     onSurfaceVariant = IntentItemNavigationIconColor,
 )
 
@@ -30,6 +31,7 @@ private val LightColorScheme = lightColorScheme(
     surface = Color.White,
     onSurface = PrimaryTextColor,
     surfaceVariant = WalletItemBackgroundColor,
+    surfaceContainerLow = BottomSheetBackgroundColor,
     onSurfaceVariant = IntentItemNavigationIconColor,
 )
 

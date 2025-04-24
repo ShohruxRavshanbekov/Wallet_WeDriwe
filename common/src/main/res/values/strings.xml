@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="successfully_changed">Successfully changed.</string>
+    <string name="client_error">Something went wrong. Please try again.</string>
+    <string name="server_error">Server error occurred. Unable to complete the request at the moment.</string>
+    <string name="network_error">Network error occurred. Please check your connection.</string>
+    <string name="time_out_error">The request took too long. Please try again later.</string>
+    <string name="no_internet_connection">No internet connection. Please reconnect and try again.</string>
+    <string name="unknown_error">An unexpected error occurred. Please try again.</string>
+
+
     <string name="balance">Balance</string>
     <string name="not_identified">Identification required</string>
 </resources>
