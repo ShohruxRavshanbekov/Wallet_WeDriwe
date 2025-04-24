@@ -7,12 +7,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
@@ -27,19 +34,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import uz.futuresoft.common.R.string
 import uz.futuresoft.common.components.CircleIconButton
 import uz.futuresoft.common.ui.icons.AppIcons
 import uz.futuresoft.common.ui.icons.ArrowLeft
 import uz.futuresoft.common.ui.theme.WalletWeDriveTheme
 import uz.futuresoft.features.wallet.WalletIntent
-import uz.futuresoft.features.wallet.WalletState
+import uz.futuresoft.features.wallet.states.PromoCodeState
 
 @Composable
 internal fun AddPromoCodeBottomSheet(
-    screenState: WalletState,
+    promoCodeState: PromoCodeState,
     intent: (WalletIntent) -> Unit,
     sheetState: SheetState,
     onDismissRequest: () -> Unit,
@@ -48,10 +58,11 @@ internal fun AddPromoCodeBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
         modifier = Modifier.fillMaxWidth(),
+        dragHandle = null,
         shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
     ) {
         AddPromoCodeBottomSheetContent(
-            screenState = screenState,
+            promoCodeState = promoCodeState,
             intent = intent,
             onDismissRequest = onDismissRequest,
         )
@@ -60,7 +71,7 @@ internal fun AddPromoCodeBottomSheet(
 
 @Composable
 private fun AddPromoCodeBottomSheetContent(
-    screenState: WalletState,
+    promoCodeState: PromoCodeState,
     intent: (WalletIntent) -> Unit,
     onDismissRequest: () -> Unit,
 ) {
@@ -69,7 +80,8 @@ private fun AddPromoCodeBottomSheetContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(20.dp),
+            .padding(20.dp)
+            .imePadding(),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Row(
@@ -81,7 +93,7 @@ private fun AddPromoCodeBottomSheetContent(
                 onClick = onDismissRequest,
             )
             Text(
-                text = "Enter Promo code",
+                text = stringResource(string.enter_promo_code),
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onSurface,
             )
@@ -89,33 +101,42 @@ private fun AddPromoCodeBottomSheetContent(
         TextField(
             value = promoCode,
             onValueChange = { promoCode = it },
-            placeholder = {
-                Text(
-                    "Promo code",
-                    style = MaterialTheme.typography.headlineSmall,
-                )
-            },
             modifier = Modifier.fillMaxWidth(),
             textStyle = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.SemiBold),
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters),
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = Color.Transparent,
                 focusedContainerColor = Color.Transparent,
             ),
+            placeholder = {
+                Text(
+                    text = stringResource(string.promo_code),
+                    style = MaterialTheme.typography.headlineSmall,
+                )
+            },
+            trailingIcon = {
+                if (promoCode.isNotEmpty()) {
+                    IconButton(onClick = { promoCode = "" }) {
+                        Icon(imageVector = Icons.Rounded.Clear, contentDescription = null)
+                    }
+                }
+            },
         )
         Button(
-            onClick = { intent(WalletIntent.SubmitPromoCode(code = promoCode)) },
+            onClick = { if (!promoCodeState.loading) intent(WalletIntent.SubmitPromoCode(code = promoCode)) },
             modifier = Modifier.fillMaxWidth(),
+            enabled = promoCode.isNotEmpty(),
             shape = RoundedCornerShape(12.dp),
         ) {
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                if (screenState.loading) {
+                if (promoCodeState.loading) {
                     CircularProgressIndicator(
-                        modifier = Modifier.size(32.dp),
+                        modifier = Modifier.size(34.dp),
                         color = MaterialTheme.colorScheme.onPrimary,
                     )
                 } else {
                     Text(
-                        text = "Save",
+                        text = stringResource(string.save),
                         modifier = Modifier.padding(vertical = 8.dp),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onPrimary,
@@ -131,7 +152,7 @@ private fun AddPromoCodeBottomSheetContent(
 private fun AddPromoCodeBottomSheetPreview() {
     WalletWeDriveTheme {
         AddPromoCodeBottomSheetContent(
-            screenState = WalletState(),
+            promoCodeState = PromoCodeState(),
             intent = {},
             onDismissRequest = {},
         )

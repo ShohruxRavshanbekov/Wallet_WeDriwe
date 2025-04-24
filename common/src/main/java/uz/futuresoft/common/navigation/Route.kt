@@ -7,5 +7,5 @@ object Route {
     data object Wallet
 
     @Serializable
-    data object AddCard
+    data object AddNewCard
 }

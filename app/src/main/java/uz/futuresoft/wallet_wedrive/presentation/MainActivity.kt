@@ -12,6 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import uz.futuresoft.common.navigation.Route
 import uz.futuresoft.features.wallet.navigation.walletRoute
 import uz.futuresoft.common.ui.theme.WalletWeDriveTheme
+import uz.futuresoft.features.cards.navigation.cardsRoute
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,6 +47,7 @@ private fun Content() {
         },
     ) {
         walletRoute(navController = navController)
+        cardsRoute(navController = navController)
     }
 }
 

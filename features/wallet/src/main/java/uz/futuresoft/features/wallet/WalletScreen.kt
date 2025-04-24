@@ -2,7 +2,6 @@
 
 package uz.futuresoft.features.wallet
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,11 +13,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -27,55 +26,86 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import uz.futuresoft.common.R.string
+import uz.futuresoft.common.navigation.Route
 import uz.futuresoft.common.ui.icons.AppIcons
 import uz.futuresoft.common.ui.icons.Card
 import uz.futuresoft.common.ui.icons.Cash
 import uz.futuresoft.common.ui.icons.NewCard
 import uz.futuresoft.common.ui.icons.PromoCode
 import uz.futuresoft.common.ui.theme.WalletWeDriveTheme
+import uz.futuresoft.features.wallet.components.AddPromoCodeBottomSheet
 import uz.futuresoft.features.wallet.components.BalanceCard
 import uz.futuresoft.features.wallet.components.IdentificationCard
 import uz.futuresoft.features.wallet.components.IntentItem
 import uz.futuresoft.features.wallet.components.PaymentMethodItem
 import uz.futuresoft.features.wallet.models.ActivePaymentMethod
-import uz.futuresoft.features.wallet.utils.PaymentMethod
+import uz.futuresoft.features.wallet.states.PromoCodeState
+import uz.futuresoft.features.wallet.states.WalletState
 
 @Composable
-fun WalletScreen(
+internal fun WalletScreen(
     navController: NavHostController,
     viewModel: WalletViewModel,
 ) {
     val walletState by viewModel.walletState.collectAsStateWithLifecycle()
+    val promoCodeState by viewModel.promoCodeState.collectAsStateWithLifecycle()
 
     LaunchedEffect(key1 = Unit) {
         viewModel.handleIntent(WalletIntent.GetWalletInfo)
     }
 
     WalletScreenContent(
-        state = walletState,
-        intent = viewModel::handleIntent
+        walletState = walletState,
+        promoCodeState = promoCodeState,
+        intent = { intent ->
+            when (intent) {
+                WalletIntent.OpenAddNewCardScreen -> navController.navigate(Route.AddNewCard)
+                else -> Unit
+            }
+            viewModel.handleIntent(intent)
+        }
     )
 }
 
 @Composable
 private fun WalletScreenContent(
-    state: WalletState,
+    walletState: WalletState,
+    promoCodeState: PromoCodeState,
     intent: (WalletIntent) -> Unit,
 ) {
     val context = LocalContext.current
     val pullToRefreshState = rememberPullToRefreshState()
     val snackBarHostState = remember { SnackbarHostState() }
+    val addPromoCodeBottomSheet = rememberModalBottomSheetState()
+    var showAddPromoCodeBottomSheet by remember { mutableStateOf(false) }
 
-    LaunchedEffect(key1 = state.successMessage) {
-        state.successMessage?.let { snackBarHostState.showSnackbar(message = it.asString(context)) }
+    LaunchedEffect(key1 = walletState.error) {
+        walletState.error?.let { snackBarHostState.showSnackbar(message = it.asString(context)) }
     }
 
-    LaunchedEffect(key1 = state.error) {
-        state.error?.let { snackBarHostState.showSnackbar(message = it.asString(context)) }
+    LaunchedEffect(key1 = promoCodeState.error) {
+        promoCodeState.error?.let { snackBarHostState.showSnackbar(message = it.asString(context)) }
+    }
+
+    LaunchedEffect(key1 = walletState.successMessage) {
+        walletState.successMessage?.let {
+            snackBarHostState.showSnackbar(message = it.asString(context))
+        }
+    }
+
+    LaunchedEffect(key1 = promoCodeState.successMessage) {
+        if (promoCodeState.successMessage != null) {
+            showAddPromoCodeBottomSheet = false
+            snackBarHostState.showSnackbar(
+                message = promoCodeState.successMessage.asString(context)
+            )
+        }
     }
 
     Scaffold(
@@ -83,7 +113,7 @@ private fun WalletScreenContent(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Wallet",
+                        text = stringResource(string.wallet),
                         style = MaterialTheme.typography.headlineLarge,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
@@ -94,7 +124,7 @@ private fun WalletScreenContent(
         containerColor = MaterialTheme.colorScheme.surface,
     ) { innerPadding ->
         PullToRefreshBox(
-            isRefreshing = state.loading,
+            isRefreshing = walletState.loading,
             onRefresh = { intent(WalletIntent.GetWalletInfo) },
             modifier = Modifier
                 .fillMaxSize()
@@ -117,17 +147,17 @@ private fun WalletScreenContent(
                 item {
                     IntentItem(
                         icon = AppIcons.PromoCode,
-                        title = "Add Promo code",
-                        onClick = {}
+                        title = stringResource(string.add_promo_code),
+                        onClick = { showAddPromoCodeBottomSheet = true }
                     )
                 }
                 item {
                     PaymentMethodItem(
                         icon = AppIcons.Cash,
-                        title = "Cash",
-                        selected = state.activePaymentMethod.cash,
+                        title = stringResource(string.cash),
+                        selected = walletState.activePaymentMethod.cash,
                         onSelect = {
-                            state.error
+                            walletState.error
                             intent(
                                 WalletIntent.ChangePaymentMethod(
                                     ActivePaymentMethod(
@@ -140,11 +170,11 @@ private fun WalletScreenContent(
                         },
                     )
                 }
-                items(state.walletInfo.cards) { card ->
+                items(walletState.walletInfo.cards) { card ->
                     PaymentMethodItem(
                         icon = AppIcons.Card,
-                        title = "Card **** ${card.number.takeLast(4)}",
-                        selected = state.activePaymentMethod.card && state.activePaymentMethod.cardId == card.id,
+                        title = stringResource(string.card, card.number.takeLast(4)),
+                        selected = walletState.activePaymentMethod.card && walletState.activePaymentMethod.cardId == card.id,
                         onSelect = {
                             intent(
                                 WalletIntent.ChangePaymentMethod(
@@ -161,10 +191,19 @@ private fun WalletScreenContent(
                 item {
                     IntentItem(
                         icon = AppIcons.NewCard,
-                        title = "Add new card",
-                        onClick = {}
+                        title = stringResource(string.add_new_card),
+                        onClick = { intent(WalletIntent.OpenAddNewCardScreen) }
                     )
                 }
+            }
+
+            if (showAddPromoCodeBottomSheet) {
+                AddPromoCodeBottomSheet(
+                    promoCodeState = promoCodeState,
+                    intent = intent,
+                    sheetState = addPromoCodeBottomSheet,
+                    onDismissRequest = { showAddPromoCodeBottomSheet = false },
+                )
             }
         }
     }
@@ -175,7 +214,8 @@ private fun WalletScreenContent(
 private fun WalletScreenPreview() {
     WalletWeDriveTheme {
         WalletScreenContent(
-            state = WalletState(),
+            walletState = WalletState(),
+            promoCodeState = PromoCodeState(),
             intent = {},
         )
     }

@@ -17,6 +17,8 @@ import uz.futuresoft.domain.utils.onError
 import uz.futuresoft.domain.utils.onSuccess
 import uz.futuresoft.features.wallet.models.ActivePaymentMethod
 import uz.futuresoft.features.wallet.models.WalletUi
+import uz.futuresoft.features.wallet.states.PromoCodeState
+import uz.futuresoft.features.wallet.states.WalletState
 import uz.futuresoft.features.wallet.utils.PaymentMethod.CARD
 import uz.futuresoft.features.wallet.utils.PaymentMethod.CASH
 import uz.futuresoft.features.wallet.utils.asUiText
@@ -32,11 +34,15 @@ class WalletViewModel(
     private val _walletState = MutableStateFlow(WalletState())
     val walletState: StateFlow<WalletState> = _walletState.asStateFlow()
 
+    private val _promoCodeState = MutableStateFlow(PromoCodeState())
+    val promoCodeState: StateFlow<PromoCodeState> = _promoCodeState.asStateFlow()
+
     fun handleIntent(intent: WalletIntent) {
         when (intent) {
             WalletIntent.GetWalletInfo -> getWalletInfo()
             is WalletIntent.SubmitPromoCode -> submitPromoCode(code = intent.code)
             is WalletIntent.ChangePaymentMethod -> changePaymentMethod(paymentMethod = intent.method)
+            else -> Unit
         }
     }
 
@@ -65,11 +71,11 @@ class WalletViewModel(
     }
 
     private fun submitPromoCode(code: String) {
-        _walletState.update { it.copy(loading = true) }
+        _promoCodeState.update { it.copy(loading = true) }
         viewModelScope.launch {
             promoCodeRepository.addPromoCode(promoCode = code)
                 .onSuccess { successMessage ->
-                    _walletState.update {
+                    _promoCodeState.update {
                         it.copy(
                             loading = false,
                             successMessage = UiText.DynamicString(successMessage),
@@ -77,7 +83,7 @@ class WalletViewModel(
                     }
                 }
                 .onError { error ->
-                    _walletState.update {
+                    _promoCodeState.update {
                         it.copy(
                             loading = false,
                             error = (error as ApiError).asUiText()

@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- common -->
+    <string name="save">Save</string>
+
+    <!-- success messages -->
     <string name="successfully_changed">Successfully changed.</string>
+    <!-- error messages -->
     <string name="client_error">Something went wrong. Please try again.</string>
     <string name="server_error">Server error occurred. Unable to complete the request at the moment.</string>
     <string name="network_error">Network error occurred. Please check your connection.</string>
@@ -8,7 +13,17 @@
     <string name="no_internet_connection">No internet connection. Please reconnect and try again.</string>
     <string name="unknown_error">An unexpected error occurred. Please try again.</string>
 
-
+    <!-- wallet screen -->
+    <string name="wallet">Wallet</string>
     <string name="balance">Balance</string>
     <string name="not_identified">Identification required</string>
+    <string name="add_promo_code">Add Promo coded</string>
+    <string name="cash">Cash</string>
+    <string name="card">Card **** %s</string>
+    <string name="add_new_card">Add new card</string>
+    <string name="enter_promo_code">Enter Promo code</string>
+    <string name="promo_code">Promo code</string>
+
+    <!-- add new card screen -->
+
 </resources>

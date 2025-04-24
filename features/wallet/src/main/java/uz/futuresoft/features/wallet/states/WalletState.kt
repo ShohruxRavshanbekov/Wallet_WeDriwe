@@ -1,4 +1,4 @@
-package uz.futuresoft.features.wallet
+package uz.futuresoft.features.wallet.states
 
 import uz.futuresoft.common.utils.UiText
 import uz.futuresoft.features.wallet.models.ActivePaymentMethod
