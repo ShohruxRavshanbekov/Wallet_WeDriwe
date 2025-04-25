@@ -86,15 +86,20 @@ private fun WalletScreenContent(
     var showAddPromoCodeBottomSheet by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = walletState.error) {
-        walletState.error?.let { snackBarHostState.showSnackbar(message = it.asString(context)) }
+        walletState.error?.getContentIfNotHandled()?.let {
+            snackBarHostState.showSnackbar(
+                message = it.asString(context)
+            )
+        }
     }
 
     LaunchedEffect(key1 = promoCodeState.error) {
-        promoCodeState.error?.let { snackBarHostState.showSnackbar(message = it.asString(context)) }
+        promoCodeState.error?.getContentIfNotHandled()
+            ?.let { snackBarHostState.showSnackbar(message = it.asString(context)) }
     }
 
     LaunchedEffect(key1 = walletState.successMessage) {
-        walletState.successMessage?.let {
+        walletState.successMessage?.getContentIfNotHandled()?.let {
             snackBarHostState.showSnackbar(message = it.asString(context))
         }
     }
@@ -102,9 +107,9 @@ private fun WalletScreenContent(
     LaunchedEffect(key1 = promoCodeState.successMessage) {
         if (promoCodeState.successMessage != null) {
             showAddPromoCodeBottomSheet = false
-            snackBarHostState.showSnackbar(
-                message = promoCodeState.successMessage.asString(context)
-            )
+            promoCodeState.successMessage.getContentIfNotHandled()?.let {
+                snackBarHostState.showSnackbar(message = it.asString(context))
+            }
         }
     }
 

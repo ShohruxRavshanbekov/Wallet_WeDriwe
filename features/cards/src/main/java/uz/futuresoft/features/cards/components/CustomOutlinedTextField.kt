@@ -4,6 +4,7 @@ package uz.futuresoft.features.cards.components
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -23,6 +24,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import uz.futuresoft.common.ui.theme.WalletWeDriveTheme
 
 @Composable
@@ -45,6 +47,7 @@ fun CustomOutlinedTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     singleLine: Boolean = false,
+    customWidth: Dp? = null,
     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
     minLines: Int = 1,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
@@ -72,7 +75,21 @@ fun CustomOutlinedTextField(
             OutlinedTextFieldDefaults.DecorationBox(
                 value = value,
                 visualTransformation = visualTransformation,
-                innerTextField = innerTextField,
+                innerTextField = {
+                    if (customWidth != null) {
+                        BasicTextField(
+                            value = value,
+                            onValueChange = onValueChange,
+                            modifier = modifier.width(customWidth),
+                            textStyle = textStyle,
+                            visualTransformation = visualTransformation,
+                            keyboardOptions = keyboardOptions,
+                            keyboardActions = keyboardActions,
+                        )
+                    } else {
+                        innerTextField()
+                    }
+                },
                 placeholder = placeholder,
                 label = label,
                 leadingIcon = leadingIcon,

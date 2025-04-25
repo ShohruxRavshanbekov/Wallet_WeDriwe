@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import uz.futuresoft.common.R.string
+import uz.futuresoft.common.utils.Event
 import uz.futuresoft.common.utils.UiText
 import uz.futuresoft.domain.repository.PromoCodeRepository
 import uz.futuresoft.domain.repository.WalletRepository
@@ -63,7 +64,7 @@ class WalletViewModel(
                     _walletState.update {
                         it.copy(
                             loading = false,
-                            error = (error as ApiError).asUiText()
+                            error = Event(content = (error as ApiError).asUiText())
                         )
                     }
                 }
@@ -78,7 +79,7 @@ class WalletViewModel(
                     _promoCodeState.update {
                         it.copy(
                             loading = false,
-                            successMessage = UiText.DynamicString(successMessage),
+                            successMessage = Event(content = UiText.DynamicString(successMessage)),
                         )
                     }
                 }
@@ -86,7 +87,7 @@ class WalletViewModel(
                     _promoCodeState.update {
                         it.copy(
                             loading = false,
-                            error = (error as ApiError).asUiText()
+                            error = Event(content = (error as ApiError).asUiText())
                         )
                     }
                 }
@@ -108,7 +109,7 @@ class WalletViewModel(
                                 cards = it.walletInfo.cards,
                             ),
                             activePaymentMethod = wallet.toActivePaymentMethod(),
-                            successMessage = UiText.StringResource(string.successfully_changed)
+                            successMessage = Event(content = UiText.StringResource(string.successfully_changed)),
                         )
                     }
                 }
@@ -116,7 +117,8 @@ class WalletViewModel(
                     _walletState.update {
                         it.copy(
                             loading = false,
-                            error = (error as ApiError).asUiText()
+                            successMessage = null,
+                            error = Event(content = (error as ApiError).asUiText())
                         )
                     }
                 }
