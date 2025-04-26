@@ -95,33 +95,35 @@ class WalletViewModel(
     }
 
     private fun changePaymentMethod(paymentMethod: ActivePaymentMethod) {
-        _walletState.update { it.copy(loading = true, activePaymentMethod = paymentMethod) }
-        viewModelScope.launch {
-            walletRepository.updatePaymentMethod(paymentMethod = paymentMethod.toDomain())
-                .onSuccess { wallet ->
-                    _walletState.update {
-                        it.copy(
-                            loading = false,
-                            walletInfo = WalletUi(
-                                balance = wallet.balance,
-                                activeMethod = if (wallet.activeMethod == "cash") CASH else CARD,
-                                activeCardId = wallet.activeCardId,
-                                cards = it.walletInfo.cards,
-                            ),
-                            activePaymentMethod = wallet.toActivePaymentMethod(),
-                            successMessage = Event(content = UiText.StringResource(string.successfully_changed)),
-                        )
+        if (walletState.value.activePaymentMethod != paymentMethod) {
+            _walletState.update { it.copy(loading = true, activePaymentMethod = paymentMethod) }
+            viewModelScope.launch {
+                walletRepository.updatePaymentMethod(paymentMethod = paymentMethod.toDomain())
+                    .onSuccess { wallet ->
+                        _walletState.update {
+                            it.copy(
+                                loading = false,
+                                walletInfo = WalletUi(
+                                    balance = wallet.balance,
+                                    activeMethod = if (wallet.activeMethod == "cash") CASH else CARD,
+                                    activeCardId = wallet.activeCardId,
+                                    cards = it.walletInfo.cards,
+                                ),
+                                activePaymentMethod = wallet.toActivePaymentMethod(),
+                                successMessage = Event(content = UiText.StringResource(string.successfully_changed)),
+                            )
+                        }
                     }
-                }
-                .onError { error ->
-                    _walletState.update {
-                        it.copy(
-                            loading = false,
-                            successMessage = null,
-                            error = Event(content = (error as ApiError).asUiText())
-                        )
+                    .onError { error ->
+                        _walletState.update {
+                            it.copy(
+                                loading = false,
+                                successMessage = null,
+                                error = Event(content = (error as ApiError).asUiText())
+                            )
+                        }
                     }
-                }
+            }
         }
     }
 }

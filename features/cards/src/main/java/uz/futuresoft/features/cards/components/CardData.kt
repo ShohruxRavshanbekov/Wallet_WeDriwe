@@ -1,6 +1,5 @@
 package uz.futuresoft.features.cards.components
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import uz.futuresoft.common.ui.theme.CardDataTextColor
 import uz.futuresoft.common.ui.theme.CardDataTextContainerBorderColor
 import uz.futuresoft.common.ui.theme.WalletWeDriveTheme
+import uz.futuresoft.features.cards.utils.CardField
 import uz.futuresoft.features.cards.utils.visual_transformation.CardExpiryDateMask
 import uz.futuresoft.features.cards.utils.visual_transformation.CardNumberMask
 
@@ -40,14 +40,8 @@ import uz.futuresoft.features.cards.utils.visual_transformation.CardNumberMask
 internal fun CardData(
     cardNumber: String,
     cardExpireDate: String,
-    onCardNumberChange: (String) -> Unit,
-    onCardExpireDateChange: (String) -> Unit,
-    onCardNumberFieldFocused: () -> Unit,
-    onCardExpireDateFieldFocused: () -> Unit,
+    onFieldFocused: (CardField) -> Unit,
 ) {
-    val focusRequester = remember { FocusRequester() }
-    val keyboardController = LocalSoftwareKeyboardController.current
-
     OutlinedCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -63,18 +57,11 @@ internal fun CardData(
         ) {
             CustomOutlinedTextField(
                 value = cardNumber,
-                onValueChange = onCardNumberChange,
+                onValueChange = {},
                 modifier = Modifier
                     .fillMaxWidth()
-                    .focusRequester(focusRequester)
-                    .focusable()
-                    .onFocusChanged {
-                        if (it.isFocused) keyboardController?.hide()
-                    }
-                    .clickable {
-                        focusRequester.requestFocus()
-                        keyboardController?.hide()
-                    },
+                    .onFocusChanged { if (it.isFocused) onFieldFocused(CardField.NUMBER) },
+                readOnly = true,
                 singleLine = true,
                 textStyle = MaterialTheme.typography.bodyMedium.copy(color = CardDataTextColor),
                 shape = RoundedCornerShape(14.dp),
@@ -98,8 +85,10 @@ internal fun CardData(
             )
             CustomOutlinedTextField(
                 value = cardExpireDate,
-                onValueChange = onCardExpireDateChange,
+                onValueChange = {},
+                modifier = Modifier.onFocusChanged { if (it.isFocused) onFieldFocused(CardField.EXPIRE_DATE) },
                 customWidth = ("00/00".length * 8).dp,
+                readOnly = true,
                 singleLine = true,
                 textStyle =
                     MaterialTheme.typography.bodyMedium.copy(color = CardDataTextColor),
@@ -133,10 +122,7 @@ private fun CardDataPreview() {
         CardData(
             cardNumber = "",
             cardExpireDate = "",
-            onCardNumberChange = {},
-            onCardExpireDateChange = {},
-            onCardNumberFieldFocused = {},
-            onCardExpireDateFieldFocused = {},
+            onFieldFocused = {},
         )
     }
 }

@@ -4,6 +4,7 @@
     <string name="save">Save</string>
 
     <!-- success messages -->
+    <string name="successfully_added">Successfully added.</string>
     <string name="successfully_changed">Successfully changed.</string>
     <!-- error messages -->
     <string name="client_error">Something went wrong. Please try again.</string>

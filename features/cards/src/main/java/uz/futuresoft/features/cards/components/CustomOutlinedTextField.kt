@@ -81,10 +81,17 @@ fun CustomOutlinedTextField(
                             value = value,
                             onValueChange = onValueChange,
                             modifier = modifier.width(customWidth),
+                            enabled = enabled,
+                            readOnly = readOnly,
                             textStyle = textStyle,
-                            visualTransformation = visualTransformation,
                             keyboardOptions = keyboardOptions,
                             keyboardActions = keyboardActions,
+                            singleLine = singleLine,
+                            maxLines = maxLines,
+                            minLines = minLines,
+                            visualTransformation = visualTransformation,
+                            interactionSource = interactionSource,
+                            cursorBrush = cursorBrush,
                         )
                     } else {
                         innerTextField()

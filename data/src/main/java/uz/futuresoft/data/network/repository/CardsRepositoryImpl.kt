@@ -45,14 +45,14 @@ class CardsRepositoryImpl(
         }
     }
 
-    override suspend fun addCard(card: NewCard): Result<List<Card>, Error> {
+    override suspend fun addCard(card: NewCard): Result<Card, Error> {
         return try {
             val response = client.post("/cards") {
                 contentType(ContentType.Application.Json)
                 setBody(card.toRequest())
             }
-            val linkedCards = response.body<List<CardResponse>>()
-            Result.Success(data = linkedCards.map { it.toDomain() })
+            val linkedCard = response.body<CardResponse>()
+            Result.Success(data = linkedCard.toDomain())
         } catch (e: ClientRequestException) {
             Result.Error(error = ApiError.CLIENT_ERROR)
         } catch (e: ServerResponseException) {
